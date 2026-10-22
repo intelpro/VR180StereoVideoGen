@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+
+# Data / outputs
+data/
+logs/
+VR180/
+stereo4d/
+*.mp4
+*.npz
