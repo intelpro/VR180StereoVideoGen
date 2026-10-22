@@ -12,4 +12,4 @@ mkdir -p /group/video-tempo-control/VRStereoVideoGen/logs
 ~/miniconda3/envs/tempocontrol/bin/python -u \
   /group/video-tempo-control/VRStereoVideoGen/scripts/download_stereo4d.py \
   --root /group/video-tempo-control/VRStereoVideoGen/data/stereo4d \
-  --num_videos 1000 --max_duration 600 --workers 4 --sleep 5
+  --num_videos 2000 --max_duration 600 --workers 4 --sleep 5

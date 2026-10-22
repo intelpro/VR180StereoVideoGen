@@ -167,11 +167,15 @@ class Downloader:
           flush=True)
 
   def wait_cooldown(self):
+    waited = False
     while not self.stop.is_set():
       left = self.cooldown_until - time.time()
       if left <= 0:
-        return
+        break
+      waited = True
       time.sleep(min(left, 30))
+    if waited:  # stagger workers so they don't all hit YouTube at once
+      time.sleep(random.uniform(0, 60))
 
   def ytdlp(self, vid):
     out_tmpl = osp.join(self.raw_dir, '%(id)s.%(ext)s')
@@ -196,8 +200,10 @@ class Downloader:
       code, out = self.ytdlp(vid)
       if any(m in out for m in BOT_MARKERS):
         with self.lock:
-          self.bot_strikes += 1
-          self.cooldown_until = time.time() + self.args.bot_cooldown
+          # one strike per cooldown window, not one per worker that hits it
+          if time.time() >= self.cooldown_until:
+            self.bot_strikes += 1
+            self.cooldown_until = time.time() + self.args.bot_cooldown
           strikes = self.bot_strikes
         self.log(vid=vid, status='error', msg=f'bot check (strike {strikes}), cooling down')
         if strikes >= self.args.max_bot_strikes:
